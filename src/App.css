@@ -17,7 +17,10 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-
+.shake-horizontal {
+	-webkit-animation: shake-horizontal 0.5s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+	        animation: shake-horizontal 0.5s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
