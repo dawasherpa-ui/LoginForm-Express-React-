@@ -1,7 +1,12 @@
-import { Box, Button, Link, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Button,  Typography } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { MyContext } from "../context/Auth";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 function Main() {
+  const {user,setUser}=useContext(MyContext)
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState(false);
   const [emailValue, setEmailValue] = useState("");
@@ -9,6 +14,34 @@ function Main() {
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [cPassword, setCPassword] = useState("");
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+
+useEffect(()=>{
+  user?handleClick():null
+},[user])
 
   const handleTransition = () => {
     setLogin(!login);
@@ -27,10 +60,27 @@ function Main() {
       }),
     });
     const response =await data.json();
-    console.log(response)
+    const autho= response[0].auth.login
+    autho?setUser(autho):setUser(false)
+  };
+  const loginFetch = async () => {
+    const data = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: emailValue,
+        password: value,
+      }),
+    });
+    const response =await data.json();
+    const autho= response[0].auth.login
+    autho?setUser(autho):setUser(false)
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    loginFetch();
   };
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -73,8 +123,8 @@ function Main() {
             }}
           >
             <input
-              type="text"
-              placeholder="Username"
+              type="email"
+              placeholder="Email"
               style={{
                 height: "34px",
                 paddingInline: "14px",
@@ -201,7 +251,7 @@ function Main() {
             </Box>
             <input
               type="email"
-              placeholder="Username"
+              placeholder="Email"
               style={{
                 height: "34px",
                 paddingInline: "14px",
@@ -286,6 +336,13 @@ function Main() {
           </Box>
         </Box>
       )}
+       <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        message="Logged In"
+        action={action}
+      />
     </Box>
   );
 }
